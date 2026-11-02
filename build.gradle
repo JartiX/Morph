@@ -16,6 +16,10 @@ minecraft {
     username = 'MorphTester'
     useDependencyAccessTransformers = true
     extraRunJvmArguments.add('-Dfml.coreMods.load=me.ichun.mods.morph.core.MorphLoadingPlugin')
+    if(project.hasProperty('visualOnly')) extraRunJvmArguments.add('-Dmorph.validation.visualOnly=true')
+    if(project.hasProperty('hudOnly')) extraRunJvmArguments.add('-Dmorph.validation.hudOnly=true')
+    if(project.hasProperty('soundsOnly')) extraRunJvmArguments.add('-Dmorph.validation.soundsOnly=true')
+    if(project.hasProperty('validation')) extraRunJvmArguments.add('-Dmorph.validation.autoExit=true')
 }
 repositories {
     maven {
@@ -35,6 +39,17 @@ tasks.named('compilePatchedMcJava') {
         def source = file('build/rfg/minecraft-src/java/net/minecraft/client/renderer/chunk/CompiledChunk.java')
         source.text = source.getText('UTF-8').replace('protected void setLayerUsed(', 'public void setLayerUsed(')
     }
+}
+if (project.hasProperty('validation')) {
+    sourceSets.main.java.srcDir 'src/validation/java'
+}
+if (project.hasProperty('validationRunDir')) {
+    def validationDirectory = file(providers.gradleProperty('validationRunDir').get())
+    tasks.named('runClient') { workingDir = validationDirectory }
+}
+if (project.hasProperty('validationServerDir')) {
+    def validationServerDirectory = file(providers.gradleProperty('validationServerDir').get())
+    tasks.named('runObfServer') { workingDir = validationServerDirectory }
 }
 processResources {
     inputs.property 'version', project.version
