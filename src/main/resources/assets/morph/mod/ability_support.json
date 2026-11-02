@@ -2110,12 +2110,14 @@
   ],
   "net.minecraft.entity.monster.EntitySkeleton": [
     "hostile",
+    "poisonResistance",
     "sunburn"
   ],
   "net.minecraft.entity.monster.EntityWitherSkeleton": [
     "fireImmunity",
     "hostile",
     "witherResistance",
+    "poisonResistance",
     "potionEffect|20,200,0,false"
   ],
   "net.minecraft.entity.monster.EntitySlime": [
@@ -2132,6 +2134,7 @@
     "fly|false",
     "fireImmunity",
     "hostile",
+    "poisonResistance",
     "witherResistance"
   ],
   "net.minecraft.entity.passive.EntityWolf": [
@@ -2139,7 +2142,59 @@
   ],
   "net.minecraft.entity.monster.EntityZombie": [
     "hostile",
+    "poisonResistance",
 	"fear|9,0.6D,net.minecraft.entity.passive.EntityVillager",
     "sunburn"
+  ],
+  "net.minecraft.entity.monster.EntityStray": [
+    "hostile", "poisonResistance", "sunburn"
+  ],
+  "net.minecraft.entity.monster.EntityHusk": [
+    "hostile", "poisonResistance"
+  ],
+  "net.minecraft.entity.monster.EntityZombieVillager": [
+    "hostile", "poisonResistance", "sunburn", "fear|9,0.6D,net.minecraft.entity.passive.EntityVillager"
+  ],
+  "net.minecraft.entity.monster.EntityEndermite": [
+    "hostile"
+  ],
+  "net.minecraft.entity.monster.EntityGuardian": [
+    "hostile", "swim|true,1.2,0.4,true"
+  ],
+  "net.minecraft.entity.monster.EntityElderGuardian": [
+    "hostile", "swim|true,1.2,0.4,true"
+  ],
+  "net.minecraft.entity.monster.EntityShulker": [
+    "hostile", "fireImmunity", "fallNegate"
+  ],
+  "net.minecraft.entity.monster.EntityVex": [
+    "hostile", "fly|false", "fireImmunity", "fallNegate"
+  ],
+  "net.minecraft.entity.monster.EntityEvoker": [
+    "hostile"
+  ],
+  "net.minecraft.entity.monster.EntityVindicator": [
+    "hostile"
+  ],
+  "net.minecraft.entity.monster.EntityIllusionIllager": [
+    "hostile"
+  ],
+  "net.minecraft.entity.passive.EntityDonkey": [
+    "step|1"
+  ],
+  "net.minecraft.entity.passive.EntityMule": [
+    "step|1"
+  ],
+  "net.minecraft.entity.passive.EntityLlama": [
+    "step|1"
+  ],
+  "net.minecraft.entity.passive.EntitySkeletonHorse": [
+    "step|1", "poisonResistance"
+  ],
+  "net.minecraft.entity.passive.EntityZombieHorse": [
+    "step|1", "poisonResistance"
+  ],
+  "net.minecraft.entity.passive.EntityParrot": [
+    "flightFlap", "float", "fallNegate"
   ]
 }

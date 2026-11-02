@@ -119,7 +119,7 @@ public class EventHandlerServer
                     playerMorphs.remove(player.getName());
                     morphs = Morph.eventHandlerServer.getPlayerMorphs(player);
                 }
-                else
+                else if(info != null)
                 {
                     //remove the morph the player is using.
                     morphs.remove(info.nextState.currentVariant);

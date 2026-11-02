@@ -1,0 +1,11 @@
+pluginManagement {
+    repositories {
+        maven {
+            url = 'https://nexus.gtnewhorizons.com/repository/public/'
+            content { includeGroupByRegex 'com[.]gtnewhorizons.*' }
+        }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+rootProject.name = 'Morph-1.12.2'

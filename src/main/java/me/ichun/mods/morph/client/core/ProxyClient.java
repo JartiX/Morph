@@ -3,6 +3,7 @@ package me.ichun.mods.morph.client.core;
 import me.ichun.mods.ichunutil.client.keybind.KeyBind;
 import me.ichun.mods.ichunutil.common.iChunUtil;
 import me.ichun.mods.morph.client.entity.EntityMorphAcquisition;
+import me.ichun.mods.morph.client.ability.AbilityClient;
 import me.ichun.mods.morph.client.render.RenderMorphAcquisition;
 import me.ichun.mods.morph.client.render.RenderPlayerHand;
 import me.ichun.mods.morph.common.Morph;
@@ -33,6 +34,7 @@ public class ProxyClient extends ProxyCommon
     public void init()
     {
         super.init();
+        AbilityClient.init();
         Morph.eventHandlerClient.renderHandInstance = new RenderPlayerHand(); //this has to be here because we reference getRenderManager which is null @ preinit
     }
 }

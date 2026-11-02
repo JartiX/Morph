@@ -26,7 +26,7 @@ public class Config extends ConfigBase
 
     @ConfigProp(category = "gameplay")
     @IntBool
-    public int bossMorphs = 0;
+    public int bossMorphs = 1;
 
     @ConfigProp(category = "gameplay")
     @IntBool

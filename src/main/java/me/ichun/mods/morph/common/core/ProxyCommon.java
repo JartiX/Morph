@@ -4,6 +4,8 @@ import me.ichun.mods.ichunutil.common.core.network.PacketChannel;
 import me.ichun.mods.morph.common.Morph;
 import me.ichun.mods.morph.common.handler.AbilityHandler;
 import me.ichun.mods.morph.common.handler.PlayerMorphHandler;
+import me.ichun.mods.morph.common.ability.ActiveAbilityHandler;
+import me.ichun.mods.morph.common.mob.MobRelations;
 import me.ichun.mods.morph.common.packet.*;
 import me.ichun.mods.morph.common.thread.ThreadGetResources;
 import net.minecraftforge.common.MinecraftForge;
@@ -14,6 +16,8 @@ public class ProxyCommon
     {
         Morph.eventHandlerServer = new EventHandlerServer();
         MinecraftForge.EVENT_BUS.register(Morph.eventHandlerServer);
+        MinecraftForge.EVENT_BUS.register(new ActiveAbilityHandler());
+        MinecraftForge.EVENT_BUS.register(new MobRelations());
 
         AbilityHandler.init();
         PlayerMorphHandler.init();
@@ -23,7 +27,9 @@ public class ProxyCommon
                 PacketUpdateActiveMorphs.class,
                 PacketGuiInput.class,
                 PacketDemorph.class,
-                PacketAcquireEntity.class
+                PacketAcquireEntity.class,
+                PacketAbilityUse.class,
+                PacketAbilityState.class
         );
     }
 
@@ -32,6 +38,7 @@ public class ProxyCommon
 
     public void postInit()
     {
-        (new ThreadGetResources(Morph.config.customPatchLink)).start();
+        // Publish a complete mapping before players can enter a world.
+        (new ThreadGetResources(Morph.config.customPatchLink)).run();
     }
 }

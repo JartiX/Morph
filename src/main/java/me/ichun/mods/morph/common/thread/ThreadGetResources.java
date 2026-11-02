@@ -204,45 +204,46 @@ public class ThreadGetResources extends Thread
 
     public <T> T getResource(String name, Type mapType)
     {
-        T objectType;
         Gson gson = new Gson();
-        try
+        // The bundled tables are the offline baseline. A custom source is opt-in.
+        if(Morph.config.useLocalResources == 1 || !Morph.config.customPatchLink.isEmpty())
         {
-            if(Morph.config.useLocalResources == 1)
-            {
-                InputStream con = new FileInputStream(new File(ResourceHelper.getConfigFolder(), name));
-                String data = new String(ByteStreams.toByteArray(con));
-                con.close();
-                objectType = gson.fromJson(data, mapType);
-            }
-            else
-            {
-                Reader fileIn = new InputStreamReader(new URL(sitePrefix + name).openStream());
-                objectType = gson.fromJson(fileIn, mapType);
-                fileIn.close();
-            }
-        }
-        catch(Throwable e)
-        {
-            if(Morph.config.useLocalResources == 1)
-            {
-                Morph.LOGGER.warn("Failed to retrieve local resource: " + name);
-            }
-            else
-            {
-                Morph.LOGGER.warn("Failed to retrieve " + name + " from " + (Morph.config.customPatchLink.isEmpty() ? "GitHub!" : sitePrefix));
-            }
-            e.printStackTrace();
-
-            Reader fileIn = new InputStreamReader(Morph.class.getResourceAsStream("/assets/morph/mod/" + name));
-            objectType = gson.fromJson(fileIn, mapType);
             try
             {
-                fileIn.close();
+                InputStream input;
+                if(Morph.config.useLocalResources == 1)
+                {
+                    input = new FileInputStream(new File(ResourceHelper.getConfigFolder(), name));
+                }
+                else
+                {
+                    java.net.URLConnection connection = new URL(sitePrefix + name).openConnection();
+                    connection.setConnectTimeout(5000);
+                    connection.setReadTimeout(5000);
+                    input = connection.getInputStream();
+                }
+                try(Reader reader = new InputStreamReader(input, java.nio.charset.StandardCharsets.UTF_8))
+                {
+                    T result = gson.fromJson(reader, mapType);
+                    if(result != null) return result;
+                }
             }
-            catch(IOException ignored){}
+            catch(IOException | RuntimeException ex)
+            {
+                Morph.LOGGER.warn("Cannot load custom Morph table " + name + "; using bundled table.");
+            }
         }
-
-        return objectType;
+        InputStream input = Morph.class.getResourceAsStream("/assets/morph/mod/" + name);
+        if(input == null) throw new IllegalStateException("Missing bundled Morph table: " + name);
+        try(Reader reader = new InputStreamReader(input, java.nio.charset.StandardCharsets.UTF_8))
+        {
+            T result = gson.fromJson(reader, mapType);
+            if(result == null) throw new IllegalStateException("Empty bundled Morph table: " + name);
+            return result;
+        }
+        catch(IOException ex)
+        {
+            throw new IllegalStateException("Cannot read bundled Morph table: " + name, ex);
+        }
     }
 }

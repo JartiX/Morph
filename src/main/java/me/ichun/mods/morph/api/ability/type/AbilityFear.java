@@ -1,11 +1,10 @@
 package me.ichun.mods.morph.api.ability.type;
 
 import me.ichun.mods.morph.api.ability.Ability;
+import me.ichun.mods.morph.common.mob.MobRelations;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 
@@ -61,6 +60,14 @@ public class AbilityFear extends Ability
     @Override
     public void tick()
     {
+        if(getParent() == null || getParent().world.isRemote)
+            return;
+        if(getParent() instanceof net.minecraft.entity.player.EntityPlayer)
+        {
+            net.minecraft.entity.player.EntityPlayer player = (net.minecraft.entity.player.EntityPlayer)getParent();
+            if(player.isSpectator() || player.capabilities.isCreativeMode)
+                return;
+        }
         if(getParent().getEntityWorld().getTotalWorldTime() % 22L == 0)
         {
             List<Entity> entityList = getParent().getEntityWorld().getEntitiesWithinAABBExcludingEntity(getParent(), getParent().getEntityBoundingBox().grow(radius, radius, radius));
@@ -71,6 +78,12 @@ public class AbilityFear extends Ability
                 if(entity instanceof EntityCreature)
                 {
                     EntityCreature creature = (EntityCreature) entity;
+                    if(creature.isOnSameTeam(getParent()))
+                        continue;
+                    // The vanilla avoidance task owns these pairs, including its retaliation checks.
+                    if(getParent() instanceof net.minecraft.entity.player.EntityPlayer
+                        && MobRelations.hasBuiltInFear(MobRelations.shape((net.minecraft.entity.player.EntityPlayer)getParent()), creature))
+                        continue;
                     for(Class clz : classList)
                     {
                         if(clz.isInstance(creature))
@@ -79,9 +92,7 @@ public class AbilityFear extends Ability
                             Vec3d vec3 = RandomPositionGenerator.findRandomTargetBlockAwayFrom(creature, 16, 7, new Vec3d(getParent().posX, getParent().posY, getParent().posZ));
                             if(vec3 != null && !(getParent().getDistanceSq(vec3.x, vec3.y, vec3.z) < getParent().getDistanceSq(creature)))
                             {
-                                Path newPath = new Path(new PathPoint[]{new PathPoint((int) vec3.x, (int) vec3.y, (int) vec3.z)});
-                                creature.getNavigator().setPath(newPath, 1D);
-                                canRun = true;
+                                canRun = creature.getNavigator().tryMoveToXYZ(vec3.x, vec3.y, vec3.z, runSpeed);
                             }
                             if(canRun)
                                 creature.getNavigator().setSpeed(runSpeed);
