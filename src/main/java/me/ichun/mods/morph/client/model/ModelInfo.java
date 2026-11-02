@@ -28,6 +28,26 @@ public class ModelInfo
         modelParent = model;
         modelList = ModelHelper.getModelCubes(model);
         modelArms = ModelHelper.getPotentialArms(modelParent);
+        // The legacy helper knows legs/wings, but omits vanilla tentacles entirely.
+        if(modelParent instanceof net.minecraft.client.model.ModelGhast)
+            tentacleArms(modelParent, net.minecraft.client.model.ModelGhast.class, "tentacles", "field_78127_b");
+        else if(modelParent instanceof net.minecraft.client.model.ModelSquid)
+            tentacleArms(modelParent, net.minecraft.client.model.ModelSquid.class, "squidTentacles", "field_78201_b");
+    }
+
+    private void tentacleArms(ModelBase model, Class<?> owner, String mcp, String srg)
+    {
+        try
+        {
+            java.lang.reflect.Field field = net.minecraftforge.fml.relauncher.ReflectionHelper.findField(owner, mcp, srg);
+            ModelRenderer[] tentacles = (ModelRenderer[])field.get(model);
+            modelArms[0] = tentacles[0];
+            modelArms[1] = tentacles[1];
+        }
+        catch(ReflectiveOperationException ex)
+        {
+            throw new IllegalStateException("Cannot obtain vanilla tentacles for POV", ex);
+        }
     }
 
     public void forceRender(Entity ent, double d, double d1, double d2, float f, float f1)

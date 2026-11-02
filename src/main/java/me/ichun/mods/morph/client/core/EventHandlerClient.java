@@ -789,18 +789,21 @@ public class EventHandlerClient
                     Morph.eventHandlerClient.renderHandInstance.clientInfo = info;
 
                     mc.getRenderManager().skinMap.put(s, Morph.eventHandlerClient.renderHandInstance);
-
-                    boolean flag = mc.getRenderViewEntity() instanceof EntityLivingBase && ((EntityLivingBase)mc.getRenderViewEntity()).isPlayerSleeping();
-                    if(mc.gameSettings.thirdPersonView == 0 && !flag && !mc.gameSettings.hideGUI && !mc.playerController.isSpectator())
+                    try
                     {
-                        mc.entityRenderer.enableLightmap();
-                        mc.getItemRenderer().renderItemInFirstPerson(event.getPartialTicks());
-                        mc.entityRenderer.disableLightmap();
+                        boolean flag = mc.getRenderViewEntity() instanceof EntityLivingBase && ((EntityLivingBase)mc.getRenderViewEntity()).isPlayerSleeping();
+                        if(mc.gameSettings.thirdPersonView == 0 && !flag && !mc.gameSettings.hideGUI && !mc.playerController.isSpectator())
+                        {
+                            mc.entityRenderer.enableLightmap();
+                            try { mc.getItemRenderer().renderItemInFirstPerson(event.getPartialTicks()); }
+                            finally { mc.entityRenderer.disableLightmap(); }
+                        }
                     }
-
-                    mc.getRenderManager().skinMap.put(s, rend);
-
-                    Morph.eventHandlerClient.renderHandInstance.clientInfo = null;
+                    finally
+                    {
+                        mc.getRenderManager().skinMap.put(s, rend);
+                        Morph.eventHandlerClient.renderHandInstance.clientInfo = null;
+                    }
                 }
             }
         }
